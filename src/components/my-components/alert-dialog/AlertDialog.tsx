@@ -15,10 +15,11 @@ import { Link } from "react-router-dom"
 interface Props {
     title?: string
     message?: string
+    icon?: any
 }
 
 
-export default function AlertDialogComp({ title, message }: Props) {
+export default function AlertDialogComp({ title, message, icon }: Props) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>

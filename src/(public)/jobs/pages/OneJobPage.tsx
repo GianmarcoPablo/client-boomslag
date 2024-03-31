@@ -6,17 +6,21 @@ import { ExternalLink } from "lucide-react"
 import Loading from "@/components/my-components/loading/Loading"
 import JobDetails from "@/components/my-components/job-details/JobDetails"
 import JobInfo from "@/components/my-components/job-info/JobInfo"
+import { getApplyJobs } from "@/actions/jobs/get-apply-jobs"
 
 export default function OneJobPage() {
 
     const { id } = useParams()
 
     const { data, isLoading, isFetching } = useQuery({ queryKey: ["job"], queryFn: () => getOneJob(id) })
-    const { data: favoriteJobs } = useQuery({ queryKey: ['favorites'], queryFn: getFavoritesJobs })
+    const { data: favoriteJobs, isLoading: favoriteLoading } = useQuery({ queryKey: ['favorites'], queryFn: getFavoritesJobs })
+    const { data: applyJobs } = useQuery({ queryKey: ['applyJobs'], queryFn: getApplyJobs })
 
     const isFavorite = favoriteJobs?.some(data => data.jobId === id)
+    const isApply = applyJobs?.some(data => data.jobId === id)
 
-    if (isLoading || isFetching) return <Loading />
+
+    if (isLoading || favoriteLoading || isFetching) return <Loading />
 
     return (
         <main className="2xl:mx-14">
@@ -40,7 +44,10 @@ export default function OneJobPage() {
                         </div>
 
                         <div className="md:col-span-2 bg-gray-100 shadow-lg">
-                            <JobDetails data={data} />
+                            <JobDetails
+                                data={data}
+                                isApply={isApply}
+                            />
                         </div>
                     </div>
                 </aside>

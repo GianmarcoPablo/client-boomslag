@@ -71,7 +71,7 @@ export default function AppRoutes() {
             <Route
                 path="dashboard/*"
                 element={
-                    <RequireAuth roles={["user"]}>
+                    <RequireAuth roles={["user","admin"]}>
                         <React.Suspense
                             fallback={<Loading />}
                         >

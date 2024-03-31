@@ -1,15 +1,27 @@
 import { Building2, Cuboid, DollarSign, ExpandIcon, MapPin, Medal, Timer, User } from 'lucide-react'
 import { useMutation, useQueryClient } from 'react-query'
 import { applyJobPost } from '@/actions/jobs/apply-job'
+import { deleteApplyJob } from '@/actions/jobs/delete-apply-job'
 import { Job } from '@/interfaces/jobs/get-all-jobs.response'
 
 interface Props {
     data: Job | undefined
+    isApply: boolean | undefined
 }
 
-export default function JobDetails({ data }: Props) {
+export default function JobDetails({ data, isApply }: Props) {
 
-    const { mutate: appyJob, isLoading } = useMutation({ mutationFn: () => applyJobPost(data?.id) })
+    const { mutate: applyJob, isLoading, isSuccess } = useMutation({ mutationFn: () => applyJobPost(data?.id) })
+    const { mutate: deleteApply, isSuccess: deleleteSucess } = useMutation({ mutationFn: () => deleteApplyJob(data?.id) })
+    const queryClient = useQueryClient()
+
+    if (isSuccess) {
+        queryClient.invalidateQueries('applyJobs')
+    }
+
+    if (deleleteSucess) {
+        queryClient.invalidateQueries('applyJobs')
+    }
 
     return (
         <div className="mt-5 p-3 md:p-5">
@@ -92,10 +104,14 @@ export default function JobDetails({ data }: Props) {
                 </div>
                 <div>
                     <button
-                        onClick={() => appyJob()}
-                        className='bg-darkColorSecondary uppercase hover:bg-colorSecondary transition-colors text-white w-full py-2 rounded-md'>
-                        {isLoading ? 'Enviando...' : 'Aplicar'}
-                        </button>
+                        onClick={() => isApply ? deleteApply() : applyJob()}
+                        // className='bg-darkColorSecondary uppercase hover:bg-colorSecondary transition-colors text-white w-full py-2 rounded-md'
+                        className={`uppercase w-full py-2 rounded-md ${isApply ? 'bg-red-500' : 'bg-darkColorSecondary'} hover:bg-colorSecondary transition-colors text-white`}
+                    >
+                        {
+                            isLoading ? 'Aplicando...' : isApply ? 'Ya te postulaste' : 'Postularme'
+                        }
+                    </button>
                 </div>
             </div>
         </div>
